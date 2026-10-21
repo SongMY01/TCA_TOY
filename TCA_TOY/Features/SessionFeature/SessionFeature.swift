@@ -65,7 +65,38 @@ struct SessionFeature{
     var body: some Reducer<State, Action> {
         Reduce { state, action in
             switch action {
-                
+            case .task:
+                return .none
+            case .serverDetected(<#T##URL?#>):
+                return .none
+            case .serverURLEntered(<#T##URL#>):
+                return .none
+            case . fileSelected(fileURL: <#T##URL#>):
+                return .none
+            case .songInfoEntered(bpm: <#T##Double#>, firstBeat: <#T##TimeInterval#>):
+                return .none
+            case .startSeparationTapped:
+                return .none
+            case .uploadSuccessResponse(jobID: <#T##String#>):
+                return .none
+            case .uploadFailureResponse(reason: <#T##String#>):
+                return .none
+            case .statusPolled(<#T##JobStatus#>):
+                return .none
+            case .separationSuccessResponse:
+                return .none
+            case .separationFailureResponse(reason: <#T##String#>):
+                return .none
+            case .downloadSuccessResponse(tracks: <#T##[SongTrack]#>):
+                return .none
+            case .downloadFailureResponse(reason: <#T##String#>):
+                return .none
+            case .openSavedSongTapped:
+                return .none
+            case .sharedSongChanged(jobID: <#T##String#>, bpm: <#T##Double#>, firstBeatOffset: <#T##TimeInterval#>):
+                return .none
+            case .retryTapped:
+                return .none
             }
         }
     }
