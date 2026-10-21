@@ -28,6 +28,7 @@ struct SessionView: View {
                 store.send(.startSeparationTapped)
             }
         }
+        // Phase에 따라 다른 뷰 보여주기...
         
     }
 }
