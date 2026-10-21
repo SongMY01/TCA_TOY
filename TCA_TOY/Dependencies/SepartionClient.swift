@@ -19,7 +19,27 @@ struct SeparationClient {
 // Conform to DependencyKey to provide a live implementation of
 // the interface.
 extension SeparationClient: DependencyKey{
-    static let liveValue = Self()
+    static let liveValue = Self(
+        health: { _ in
+            try? await Task.sleep(for: .milliseconds(500))
+            return true
+        },
+        upload: { _, _ in
+            try? await Task.sleep(for: .milliseconds(500))
+            return "2"
+        },
+        status: { _, _ in
+            try? await Task.sleep(for: .milliseconds(500))
+            return JobStatus(
+                state: .done,
+                stems: [.vocal, .drums, .bass, .guitar, .piano]
+            )
+        },
+        downloadStem: { _, _ in
+            try? await Task.sleep(for: .milliseconds(500))
+            return Data()
+        }
+    )
 }
 
 // Register the dependency within DependencyValues.

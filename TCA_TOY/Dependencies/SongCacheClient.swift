@@ -10,17 +10,19 @@ import Foundation
 
 @DependencyClient
 struct SongCacheClient {
-    var cachedURL: (_ jobID: String,_ stem: SessionID) async throws -> URL?
-    var isComplete: (_ jobID: Bool) async throws -> Bool
     var store: (_ tempFile: Data, _ jobID: String, _ stem: SessionID) async throws -> URL
-    var lastJobID: () async throws -> String?
-    var markOpened:(_ jobID: String) async throws -> Void
 }
 
 // Conform to DependencyKey to provide a live implementation of
 // the interface.
 extension SongCacheClient: DependencyKey{
-    static let liveValue = Self()
+    static let liveValue = Self(
+        store: { data, jobID, stem in
+            let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("\(jobID)_\(stem.rawValue).mp3")
+            try? data.write(to: tempURL)
+            return tempURL
+        },
+    )
 }
 
 // Register the dependency within DependencyValues.
