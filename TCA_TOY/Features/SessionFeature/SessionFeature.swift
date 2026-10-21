@@ -32,7 +32,7 @@ struct SessionFeature{
         var phase: SessionPhase = .idle
         var selectedFileURL: URL?
         var separationJobID: String?
-        var tracks: [SongTrack]
+        var tracks: [SongTrack] = []
         var songBPM : Double = 120
         var firstBeatOffset: TimeInterval = 0
         var serverURL: URL?
