@@ -69,6 +69,41 @@ struct SessionFeature: Reducer {
         }
     }
     
+    var body: some ReducerOf<Self> {
+        Reduce { state, action in
+            switch action {
+            case let .fileSelected(fileURL: url): // 1
+                state.selectedFileURL = url
+                return .none
+                
+            case let .songInfoEntered(bpm: bpm, firstBeat: firstBeat): // 2,3
+                state.songBPM = bpm
+                state.firstBeatOffset = firstBeat
+                return .none
+                
+            case .startSeparationTapped: // 4,5,6
+                guard let file = state.selectedFileURL else {
+                    return .none
+                }
+                guard let baseURL = state.serverURL else {
+                    return .none
+                }
+                guard case .connected = state.serverStatus else {
+                    return .none
+                }
+                state.phase = .uploading
+                return .run { send in
+                    do {
+                        let jobID = try await separationClient.upload(file, baseURL)
+                        await send(.uploadSuccessResponse(jobID: jobID))
+                    } catch {
+                        await send(.uploadFailureResponse(reason: error.localizedDescription))
+                    }
+                }
+            }
+        }
+    }
+    
     //
     //    @Dependency
     //    var separationClient
