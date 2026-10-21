@@ -5,14 +5,8 @@
 //  Created by martin on 10/21/26.
 //
 
-class JobStatus{
+struct JobStatus: Equatable{
     var state: JobStatusState
     var stems: [SessionID]
     var error: String?
-    
-    init(state: JobStatusState, stems: [SessionID], error: String? = nil) {
-        self.state = state
-        self.stems = stems
-        self.error = error
-    }
 }
