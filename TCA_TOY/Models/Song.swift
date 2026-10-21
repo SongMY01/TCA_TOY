@@ -21,14 +21,14 @@ import SwiftUI
 
 class Song{
     var id: String
-    var tracks: SongTrack
+    var tracks: [SongTrack]
     var bpm : Double = 120
     var firstBeatOffset : TimeInterval
     
-    init(id: String, tracks: SongTrack,bpm:Double, firstbeatOffset: TimeInterval){
+    init(id: String, tracks: [SongTrack], bpm: Double, firstBeatOffset: TimeInterval) {
         self.id = id
         self.tracks = tracks
         self.bpm = bpm
-        self.firstBeatOffset = firstbeatOffset
+        self.firstBeatOffset = firstBeatOffset
     }
 }
