@@ -6,8 +6,11 @@
 //
 
 import SwiftUI
+import ComposableArchitecture
 
 struct SessionView: View {
+    let store: StoreOf<SessionFeature>
+    
     var body: some View {
         Text("Hello, world!")
             .padding()
