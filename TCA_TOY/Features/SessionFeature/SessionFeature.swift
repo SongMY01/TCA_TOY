@@ -8,25 +8,24 @@
 import SwiftUI
 import ComposableArchitecture
 
-enum SessionPhase: Equatable{
-    case idle, uploading
-    case uploadFailed(reason: String)
-    case separating
-    case separationFailed(reason: String)
-    case downloading
-    case downloadFailed(reason: String)
-    case ready
-}
-
-enum ServerStatus: Equatable{
-    case searching
-    case connected(name: String)
-    case notFound
-}
-
-
 @Reducer
 struct SessionFeature{
+    enum SessionPhase: Equatable{
+        case idle, uploading
+        case uploadFailed(reason: String)
+        case separating
+        case separationFailed(reason: String)
+        case downloading
+        case downloadFailed(reason: String)
+        case ready
+    }
+
+    enum ServerStatus: Equatable{
+        case searching
+        case connected(name: String)
+        case notFound
+    }
+    
     @ObservableState
     struct State: Equatable{
         var phase: SessionPhase = .idle
