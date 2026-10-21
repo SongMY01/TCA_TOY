@@ -60,6 +60,12 @@ struct SessionFeature{
         case openSavedSongTapped
         case sharedSongChanged(jobID: String, bpm: Double, firstBeatOffset:TimeInterval)
         case retryTapped
+        
+        case delegate(Delegate)
+        enum Delegate: Equatable{
+            case songReady(Song)
+            case serverChanged(URL)
+        }
     }
     
     var body: some Reducer<State, Action> {
@@ -96,6 +102,8 @@ struct SessionFeature{
             case .sharedSongChanged(jobID: <#T##String#>, bpm: <#T##Double#>, firstBeatOffset: <#T##TimeInterval#>):
                 return .none
             case .retryTapped:
+                return .none
+            case .delegate:
                 return .none
             }
         }
