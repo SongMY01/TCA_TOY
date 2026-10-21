@@ -10,7 +10,7 @@ import ComposableArchitecture
 
 @Reducer
 struct SessionFeature: Reducer {
-
+    
     @ObservableState
     struct State: Equatable {
         enum SessionPhase: Equatable {
@@ -44,14 +44,35 @@ struct SessionFeature: Reducer {
         var cachedSongJobID: String?
     }
     
-    struct Action: Equatable {
+    enum Action: Equatable {
+        case task
+        case serverDetected(URL?)
+        case serverURLEntered(URL)
+        case fileSelected(fileURL: URL)
+        case songInfoEntered(bpm: Double, firstBeat: TimeInterval)
+        case startSeparationTapped
+        case uploadSuccessResponse(jobID: String)
+        case uploadFailureResponse(reason: String)
+        case statusPolled(JobStatus)
+        case separationSuccessResponse
+        case separationFailureResponse(reason: String)
+        case downloadSuccessResponse(tracks: [SongTrack])
+        case downloadFailureResponse(reason: String)
+        case openSavedSongTapped
+        case sharedSongChanged(jobID: String, bpm: Double, firstBeatOffset: TimeInterval)
+        case retryTapped
+        case delegate(Delegate)
         
+        enum Delegate: Equatable {
+            case songReady(Song)
+            case serverChanged(URL)
+        }
     }
-//
-//    @Dependency
-//    var separationClient
-//    
-//    @Dependency
-//    var songCacheclient
     
+    //
+    //    @Dependency
+    //    var separationClient
+    //
+    //    @Dependency
+    //    var songCacheclient
 }
