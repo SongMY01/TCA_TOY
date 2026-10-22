@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct SongTrack{
+struct SongTrack: Equatable{
     var id: SessionID
     var fileURL : URL
 }
