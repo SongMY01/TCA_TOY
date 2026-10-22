@@ -5,67 +5,109 @@
 //  Created by martin on 10/21/26.
 //
 
-/**
- Attributes (State)
- - phase: SessionPhase = .idle
- - selectedFileURL: URL?
- - separationJobID: String?
- - tracks: [SongTrack] = []
- - songBPM: Double = 120   입력값 → Song
- - firstBeatOffset: TimeInterval = 0  입력값
- - serverURL: URL?
- - serverStatus: ServerStatus
- - sharedSongJobID: String?
- - cachedSongJobID: String?
- - @Dependency separationClient
- - @Dependency songCacheClient
- Operations (Action)
- - task          서버 찾기 · 저장된 곡 확인
- - serverDetected(URL?)
- - serverURLEntered(URL)
- - fileSelected(fileURL: URL)
- - songInfoEntered(bpm, firstBeat)
- - startSeparationTapped
- - uploadSuccessResponse(jobID)
- - uploadFailureResponse(reason)
- - statusPolled(JobStatus)
- - separationSuccessResponse
- - separationFailureResponse(reason)
- - downloadSuccessResponse(tracks)
- - downloadFailureResponse(reason)
- - openSavedSongTapped
- - sharedSongChanged(jobID, bpm,
-     firstBeatOffset)
-   이미 열린 곡이면 무시
- - retryTapped
- Delegate (알림)
- - songReady(Song)
- - serverChanged(URL)
- */
 import SwiftUI
 import ComposableArchitecture
 
 @Reducer
-struct SessionFeature{
-    enum SessionPhase{
-        case idle, uploading,uploadFailed, separating, separtationFaile, downloading, downloadFailed,ready
+struct SessionFeature: Reducer {
+    
+    @ObservableState
+    struct State: Equatable {
+        enum SessionPhase: Equatable {
+            case idle
+            case uploading
+            case uploadFailed(reason: String)
+            case separating
+            case separationFailed(reason: String)
+            case downloading
+            case downloadFailed(reason: String)
+            case ready
+        }
+        
+        var phase: SessionPhase = .idle
+        var selectedFileURL: URL?
+        var separationJobID: String?
+        var tracks: [SongTrack] = []
+        var songBPM: Double = 120
+        var firstBeatOffset: TimeInterval = 0
+        var serverURL: URL?
+        
+        enum ServerStatus: Equatable {
+            case idle
+            case searching
+            case connected(name: String)
+            case notFound
+        }
+        
+        var serverStatus: ServerStatus = .idle
+        var sharedSongJobID: String?
+        var cachedSongJobID: String?
     }
-    var selectedFileURL: URL?
-    var separationJobID: String?
-    var tracks: SongTrack
-    var songBPM : Double = 120
-    var firstBeatOffset: TimeInterval = 0
-    var serverURL: URL?
-    enum ServerStatus{
-        case searching, connected, notFound
+    
+    enum Action: Equatable {
+        case task
+        case serverDetected(URL?)
+        case serverURLEntered(URL)
+        case fileSelected(fileURL: URL)
+        case songInfoEntered(bpm: Double, firstBeat: TimeInterval)
+        case startSeparationTapped
+        case uploadSuccessResponse(jobID: String)
+        case uploadFailureResponse(reason: String)
+        case statusPolled(JobStatus)
+        case separationSuccessResponse
+        case separationFailureResponse(reason: String)
+        case downloadSuccessResponse(tracks: [SongTrack])
+        case downloadFailureResponse(reason: String)
+        case openSavedSongTapped
+        case sharedSongChanged(jobID: String, bpm: Double, firstBeatOffset: TimeInterval)
+        case retryTapped
+        case delegate(Delegate)
+        
+        enum Delegate: Equatable {
+            case songReady(Song)
+            case serverChanged(URL)
+        }
     }
-    var sharedSongJobID: String?
-    var cachedSongJobID: String?
     
-    @Dependency
-    var separationClient
+    var body: some ReducerOf<Self> {
+        Reduce { state, action in
+            switch action {
+            case let .fileSelected(fileURL: url): // 1
+                state.selectedFileURL = url
+                return .none
+                
+            case let .songInfoEntered(bpm: bpm, firstBeat: firstBeat): // 2,3
+                state.songBPM = bpm
+                state.firstBeatOffset = firstBeat
+                return .none
+                
+            case .startSeparationTapped: // 4,5,6
+                guard let file = state.selectedFileURL else {
+                    return .none
+                }
+                guard let baseURL = state.serverURL else {
+                    return .none
+                }
+                guard case .connected = state.serverStatus else {
+                    return .none
+                }
+                state.phase = .uploading
+                return .run { send in
+                    do {
+                        let jobID = try await separationClient.upload(file, baseURL)
+                        await send(.uploadSuccessResponse(jobID: jobID))
+                    } catch {
+                        await send(.uploadFailureResponse(reason: error.localizedDescription))
+                    }
+                }
+            }
+        }
+    }
     
-    @Dependency
-    var songCacheclient
-    
+    //
+    //    @Dependency
+    //    var separationClient
+    //
+    //    @Dependency
+    //    var songCacheclient
 }

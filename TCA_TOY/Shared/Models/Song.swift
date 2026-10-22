@@ -19,13 +19,13 @@
  */
 import SwiftUI
 
-class Song{
+struct Song: Equatable {
     var id: String
-    var tracks: SongTrack
-    var bpm : Double = 120
-    var firstBeatOffset : TimeInterval
+    var tracks: [SongTrack]
+    var bpm: Double = 120
+    var firstBeatOffset: TimeInterval
     
-    init(id: String, tracks: SongTrack,bpm:Double, firstbeatOffset: TimeInterval){
+    init(id: String, tracks: [SongTrack], bpm: Double, firstbeatOffset: TimeInterval){
         self.id = id
         self.tracks = tracks
         self.bpm = bpm
